@@ -1,0 +1,19 @@
+{
+  "name": "devtinder_backend",
+  "version": "1.0.0",
+  "description": "dev app",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/app.js",
+    "start": "node src/app.js"
+  },
+  "keywords": [
+    "node",
+    "mongo"
+  ],
+  "author": "Piyush joshi",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
