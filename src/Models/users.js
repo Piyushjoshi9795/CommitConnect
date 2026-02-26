@@ -54,6 +54,21 @@ const userSchema = new mongoose.Schema(
     Skills: {
       type: [String],
     },
+    isPremium: {
+    type: Boolean,
+    default: false,
+  },
+
+requestsSentToday: {
+  type: Number,
+  default: 0,
+},
+
+lastRequestDate: {
+  type: Date,
+  default: null,
+},
+
   },
   { timestamps: true } // 👈 this adds createdAt & updatedAt
 );

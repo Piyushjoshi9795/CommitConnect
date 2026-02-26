@@ -6,54 +6,79 @@ const ConnectionRequest = require("../Models/connectionRequest");
 
 const User = require("../Models/users");
 // api to send request
-requestRouter.post("/request/send/:status/:toUserId", adminAuth, async (req, res) => {
-  // adminauth is the middleware which checks for jwt token
-  try {
-    const fromUserId = req.user._id;
-    const toUserId = req.params.toUserId;
-    const status = req.params.status;
+requestRouter.post(
+  "/request/send/:status/:toUserId",
+  adminAuth,
+  async (req, res) => {
+    try {
+      const fromUserId = req.user._id;
+      const toUserId = req.params.toUserId;
+      const status = req.params.status;
 
-    const allowedStatus = ["ignored", "interested"];
+      const allowedStatus = ["ignored", "interested"];
+      if (!allowedStatus.includes(status)) {
+        return res.status(400).json({ message: "Incorrect Status type" });
+      }
 
-    if (!allowedStatus.includes(status)) {
-      return res.status(400).json({ message: "Incorrect Status type" });
-    }
-    const toUser = await User.findById(toUserId);
-    if (!toUser) {
-      return res.status(400).json({ message: "User not found" });
-    }
+      const toUser = await User.findById(toUserId);
+      if (!toUser) {
+        return res.status(400).json({ message: "User not found" });
+      }
 
-    const existingConnectionRequest = await ConnectionRequest.findOne({
-      $or: [
-        {
+      // 🔴 STEP 2: DAILY LIMIT CHECK (ONLY FOR NON-PREMIUM)
+      if (!req.user.isPremium) {
+      
+        const today = new Date();
+        today.setUTCHours(0, 0, 0, 0);
+        const todayRequestCount = await ConnectionRequest.countDocuments({
           fromUserId,
-          toUserId,
-        },
-        {
-          fromUserId: toUserId,
-          toUserId: fromUserId,
-        },
-      ],
-    });
+          createdAt: { $gte: today },
+        });
 
-    if (existingConnectionRequest) {
-      return res.status(400).send({ message: "Connection Request already exists !" });
+        if (todayRequestCount >= 2) {
+          return res.status(403).json({
+            message: "Daily connection request limit reached",
+          });
+        }
+      }
+
+      // Existing request check
+      const existingConnectionRequest = await ConnectionRequest.findOne({
+        $or: [
+          { fromUserId, toUserId },
+          { fromUserId: toUserId, toUserId: fromUserId },
+        ],
+      });
+
+      if (existingConnectionRequest) {
+        return res
+          .status(400)
+          .json({ message: "Connection Request already exists!" });
+      }
+
+      const connectionRequest = new ConnectionRequest({
+        fromUserId,
+        toUserId,
+        status,
+      });
+
+      const data = await connectionRequest.save();
+
+      res.json({
+        message:
+          req.user.firstName +
+          " is " +
+          status +
+          " in " +
+          toUser.firstName,
+        data,
+      });
+    } catch (err) {
+      res.status(400).send("ERROR: " + err.message);
     }
-    const connectionRequest = await ConnectionRequest({
-      fromUserId,
-      toUserId,
-      status,
-    });
-
-    const data = await connectionRequest.save();
-    res.json({
-      message: req.user.firstName + " is " + status + " in " + toUser.firstName,
-      data,
-    });
-  } catch (err) {
-    res.status(400).send("ERROR: " + err.message);
   }
-});
+);
+
 
 // api to accept /reject request
 requestRouter.post("/request/review/:status/:requestId", adminAuth, async (req, res) => {

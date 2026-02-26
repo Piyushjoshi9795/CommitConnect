@@ -4,7 +4,7 @@ const { adminAuth } = require("../middlewares/adminauth");
 const { validateEditeProfileData } = require("../utils/validation");
 
 //------------------- GET USER PROFILE---------------------
-profileRouter.get("/profile/view", adminAuth, async (req, res) => {
+profileRouter.get("/view", adminAuth, async (req, res) => {
   try {
     // validate using secret key
     // it will give decoded message which consist of userid that you have passed on login

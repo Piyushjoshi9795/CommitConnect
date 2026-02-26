@@ -75,8 +75,7 @@ userRouter.get("/feed", adminAuth, async (req, res) => {
       hideUsersFromFeed.add(req.toUserId.toString());
     });
 
-    const showUsers = await users
-      .find({
+    const showUsers = await users.find({
         $and: [{ _id: { $nin: Array.from(hideUsersFromFeed) } }, { _id: { $ne: loggedInUser._id } }],
       })
       .select("firstName lastName age gender photoUrl About Skills")
