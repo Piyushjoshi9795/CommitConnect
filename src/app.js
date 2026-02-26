@@ -6,6 +6,7 @@ const { connectDb } = require("./config/Database");
 // const { validateSignupData } = require("./utils/validation");
 const cookieParser = require("cookie-parser");
 const stripeWebhookRouter = require("./routes/stripeWebhook");
+const PORT = process.env.PORT || 4000;
 
 const cors = require("cors");
 
@@ -29,7 +30,7 @@ app.use(cors({
   },
   credentials: true
 }));
- // middleware to call api from one origin to other(calling from frontend webservice)
+// middleware to call api from one origin to other(calling from frontend webservice)
 
 console.log("WEbhoooooooook");
 
@@ -58,7 +59,7 @@ app.use("/api/users", userRouter);
 connectDb()
   .then(() => {
     console.log("✅ Database connected successfully");
-    app.listen(4000, () => console.log("🚀 Server running on port 4000"));
+    app.listen(PORT, () => console.log("🚀 Server running on port 4000"));
   })
   .catch((err) => {
     console.error("❌ Database connection failed", err);
