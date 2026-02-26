@@ -3,6 +3,7 @@ const Stripe = require("stripe");
 const User = require("../Models/users");
 
 const paymentRouter = express.Router();
+console.log("Stripe key:", process.env.STRIPE_SECRET_KEY);
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // ⚠️ RAW BODY REQUIRED
@@ -11,7 +12,7 @@ paymentRouter.post(
   express.raw({ type: "application/json" }),
   async (req, res) => {
     const sig = req.headers["stripe-signature"];
-   console.log("🔔 Webhook hit");
+    console.log("🔔 Webhook hit");
 
     let event;
     try {
