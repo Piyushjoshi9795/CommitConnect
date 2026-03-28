@@ -37,8 +37,8 @@ authRouter.post("/signup", async (req, res) => {
 
     res.cookie("token", token, {
   httpOnly: true,
-  secure: false, // true in production (https)
-  sameSite: "lax",
+  secure: true, // true in production (https)
+  sameSite: "None", // 'lax' or 'strict' in production, 'none' if secure is true
   expires: new Date(Date.now() + 8 * 3600000),
 });
     res.json({ message: "User registered successfully ✅", data: savedUser });
@@ -72,8 +72,8 @@ authRouter.post("/login", async (req, res) => {
 
     res.cookie("token", token, {
   httpOnly: true,
-  secure: false, // true in production
-  sameSite: "lax",
+  secure: true, // true in production
+  sameSite: "None",
 });
     res.send(userObj);
   } catch (err) {
