@@ -19,7 +19,7 @@ const allowedOrigins = [
   "http://localhost",
   "http://localhost:5173",
   "http://localhost:3000",
-  process.env.FRONTEND_URL, // Production frontend URL
+  process.env.CLIENT_URL, // Production frontend URL
 ].filter(Boolean); // Remove undefined values
 
 app.use(cors({
