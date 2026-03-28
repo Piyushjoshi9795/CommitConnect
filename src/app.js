@@ -17,8 +17,10 @@ const app = express();
 // this allows your react app to access your backend, credentials :true allows browser to send cookies , tokens etc..
 const allowedOrigins = [
   "http://localhost",
-  "http://localhost:5173"
-];
+  "http://localhost:5173",
+  "http://localhost:3000",
+  process.env.FRONTEND_URL, // Production frontend URL
+].filter(Boolean); // Remove undefined values
 
 app.use(cors({
   origin: function (origin, callback) {
